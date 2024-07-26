@@ -1,0 +1,81 @@
+* Prepare tools
+- https://github.com/izlyforever/cf-tool
+
+#+begin_src bash
+go env -w GO111MODULE=auto
+cd ~/.go/src/github.com/izlyforever/cf-tool
+go env -w CGO_ENABLED="0"
+go build -ldflags "-s -w" cf.go
+#+End_src
+
+** To fix =Cannot find csrf=
+#+begin_src txt
+Not logged. Try to login
+Cannot find csrf
+#+end_src
+
+apply this
+https://github.com/xalanq/cf-tool/compare/master...sainad2222:cf-tool:master?diff=split&w=
+
+#+begin_src diff
+func findCsrf(body []byte) (string, error) {
+-	reg := regexp.MustCompile(`csrf='(.+?)'`)
++	reg := regexp.MustCompile(`data-csrf='(.+?)'`)
+	tmp := reg.FindSubmatch(body)
+	if len(tmp) < 2 {
+		return "", errors.New("Cannot find csrf")
+#+end_src
+
+** Disable create README.md per contest
+#+begin_src diff
+@@ -160,12 +160,12 @@ func (c *Client) Parse(info Info) (problems []string, paths []string, err error)
+ 	// create READEME per contest
+-	filename := contestPath + "/README.md"
+-	if _, err := os.Stat(filename); err != nil {
+-		README, _ := os.Create(filename)
+-		README.Close()
+-		ansi.Printf(color.CyanString("Create file: %v\n"), color.GreenString(filename))
+-	}
++	// filename := contestPath + "/README.md"
++	// if _, err := os.Stat(filename); err != nil {
++	// 	README, _ := os.Create(filename)
++	// 	README.Close()
++	// 	ansi.Printf(color.CyanString("Create file: %v\n"), color.GreenString(filename))
++	// }
+#+end_src
+
+* Contest
+1. =cf race <number>=
+
+#+NAME: ~/.cf/config
+#+begin_src js
+{
+  "template": [
+    {
+      "alias": "cpp",
+      "lang": "54",
+      "path": "path_to_codeforces/etc/template.cpp",
+      "suffix": [
+        "cpp"
+      ],
+      "before_script": "g++ -D_DEBUG -Wall -Wextra -pedantic -std=c++17 -O2 -Wshadow -Wfloat-equal -Wconversion -Wlogical-op -Wshift-overflow=2 -Wduplicated-cond -Wcast-qual -Wcast-align -D_FORTIFY_SOURCE=2 -fstack-protector $%file%$.cpp -o $%file%$",
+      "script": "./$%file%$",
+      "after_script": ""
+    }
+  ],
+  "default": 0,
+  "gen_after_parse": true,
+  "host": "https://codeforces.com",
+  "proxy": "",
+  "folder_name": {
+    "acmsguru": "acmsguru",
+    "contest": "contest",
+    "group": "group",
+    "gym": "gym",
+    "root": "."
+  }
+}
+#+end_src
+
+* Links
+- https://cf.kira924age.com/#/table/u_t0s
